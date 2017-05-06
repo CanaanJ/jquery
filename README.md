@@ -1,7 +1,7 @@
 
 这里做jQuery的解读和加注释
 --------------------------------------
-1.没有研究Gruntfile 暂时认为入口是/src/jquery.js
+1. 没有研究Gruntfile 暂时认为入口是/src/jquery.js
 
 [jQuery](https://jquery.com/) — New Wave JavaScript
 ==================================================
