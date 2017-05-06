@@ -221,12 +221,16 @@ define([
 		 * @returns
 		 */
 		map: function (callback) {
+			//将map返回的新数组添加到jQuery栈中
 			return this.pushStack(jQuery.map(this, function (elem, i) {
 				return callback.call(elem, i, elem);
 			}));
 		},
 
 		slice: function () {
+			//arguments
+			//https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/arguments
+			//arguments 是一个类似数组的对象, 对应于传递给函数的参数。
 			return this.pushStack(slice.apply(this, arguments));
 		},
 
