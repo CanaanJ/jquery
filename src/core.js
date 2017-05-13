@@ -167,6 +167,7 @@ define([
 		get: function (num) {
 
 			// Return all the elements in a clean array
+			//如果参数是null 就返回一个新的数组
 			if (num == null) {
 				return slice.call(this);
 			}
@@ -182,15 +183,18 @@ define([
 		/**
 		 * 用于将一个DOM元素集合加入到jQuery栈。
 		 * 参考：http://www.jb51.net/article/29648.htm
+		 * 		http://blog.csdn.net/qiqingjin/article/details/50756763
+		 * 		http://www.jb51.net/article/60686.htm
 		 * 通过改变一个jQuery对象的prevObject属性来"跟踪"链式调用中前一个方法返回的DOM结果集
+		 * 其实就是做链式排序的
 		 *
 		 * @param {any} elems
-		 * @returns
+		 * @returns 返回的是一个数组
 		 */
 		pushStack: function (elems) {
 
 			// Build a new jQuery matched element set
-			//还没搞懂他是干嘛的
+			//this.constructor 就是jQuery的构造函数init，所以this.constructor()返回一个jQuery对象.
 			var ret = jQuery.merge(this.constructor(), elems);
 
 			// Add the old object onto the stack (as a reference)
@@ -227,38 +231,91 @@ define([
 			}));
 		},
 
+		/**
+		 * 把匹配元素集合缩减为指定的指数范围的子集。
+		 * http://www.w3school.com.cn/jquery/traversing_slice.asp
+		 *
+		 * @returns
+		 */
 		slice: function () {
 			//arguments
 			//https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/arguments
 			//arguments 是一个类似数组的对象, 对应于传递给函数的参数。
+			//arguments 是当前方法获取的参数的集合
+			//调用 Array.prototype.slice
+			/**
+			 * function aaa(){
+			 * 	console.log(arguments);
+			 * }
+			 * aaa(1,2,3);//查看log
+			 */
 			return this.pushStack(slice.apply(this, arguments));
 		},
 
+		/**
+		 * 获取匹配元素集合的第一个
+		 *
+		 * @returns
+		 */
 		first: function () {
+			//调用eq方法
 			return this.eq(0);
 		},
 
+		/**
+		 * 获取匹配元素集合的最后一个
+		 *
+		 * @returns
+		 */
 		last: function () {
+			//调用eq方法  负数就是从后往前数
 			return this.eq(-1);
 		},
 
+		/**
+		 * 选择数组的第i个元素
+		 *
+		 * @param {any} i
+		 * @returns
+		 */
 		eq: function (i) {
+			//数组总长度
 			var len = this.length,
+				//通过计算 获取对应的索引
+				//+i 强制转换i为数字
 				j = +i + (i < 0 ? len : 0);
+			//
+			//根据一些判断 选择传入的参数 如果j超出数组范围则返回空
+			//返回的数组的prevObject 等于当前的对象：this
 			return this.pushStack(j >= 0 && j < len ? [this[j]] : []);
 		},
 
+		/**
+		 * 获取原型链上最后一个prevObject
+		 * 也就是当前对象的prevObject但是如果不存在的话则放回当前
+		 *
+		 * @returns
+		 */
 		end: function () {
 			return this.prevObject || this.constructor();
 		},
 
 		// For internal use only.
 		// Behaves like an Array's method, not like a jQuery method.
+		//绑定方法是Array.prototype.push
 		push: push,
+		//绑定方法是Array.prototype.sort
 		sort: arr.sort,
+		//绑定的方法是Array.prototype.splice
 		splice: arr.splice
 	};
 
+	/**
+	 * jQuery 的延伸(扩展) 方法
+	 * 处理延伸的对象
+	 *
+	 * @returns
+	 */
 	jQuery.extend = jQuery.fn.extend = function () {
 		var options, name, src, copy, copyIsArray, clone,
 			target = arguments[0] || {},
@@ -328,6 +385,7 @@ define([
 		return target;
 	};
 
+	//条用延伸方法 添加延伸(扩展)
 	jQuery.extend({
 
 		// Unique for each copy of jQuery on the page
@@ -511,7 +569,7 @@ define([
 		// Support: Android <=4.0 only, PhantomJS 1 only
 		// push.apply(_, arraylike) throws on ancient WebKit
 		/**
-		 *
+		 *用来合并对象, 设计思路是在第一个对象的基础上，把第二个对象的属性(0至n)附加上去,
 		 *
 		 * @param {any} first
 		 * @param {any} second
@@ -519,7 +577,7 @@ define([
 		 */
 		merge: function (first, second) {
 			//这里的 + 是对secound.length做一个强制转换
-			var len =+second.length,
+			var len = +second.length,
 				j = 0,
 				i = first.length;
 
